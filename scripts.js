@@ -45,273 +45,247 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ---------- Rain on Glass Effect (Canvas 2D) ----------
-  const canvas = document.getElementById("rippleCanvas");
+  // ---------- WebGL2 Shader Background ----------
+  const canvas = document.getElementById("bg-canvas");
   if (!canvas) return;
-  const ctx = canvas.getContext("2d");
 
-  let W, H;
-  let mouseX = -9999, mouseY = -9999;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const DPR_CAP = 1.5;
 
+  // --- WebGL2 context (fallback to WebGL1) ---
+  let gl = canvas.getContext("webgl2", { antialias: false, alpha: false });
+  let isWebGL2 = true;
+  if (!gl) {
+    gl = canvas.getContext("webgl", { antialias: false, alpha: false });
+    isWebGL2 = false;
+  }
+  if (!gl) {
+    canvas.style.background = "#0a0a0a";
+    return;
+  }
+
+  // --- Shader sources (WebGL2) ---
+  const VS_SRC = `#version 300 es
+  in vec2 a_pos;
+  void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }`;
+
+  const FS_SRC = `#version 300 es
+  precision highp float;
+  uniform float u_time;
+  uniform vec2  u_resolution;
+  uniform vec2  u_pointer;
+  uniform float u_scroll;
+  out vec4 outColor;
+
+  float hash(vec2 p) {
+    p = fract(p * vec2(123.34, 456.21));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+  }
+
+  float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    float a = hash(i);
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+  }
+
+  float fbm(vec2 p) {
+    float v = 0.0, a = 0.5;
+    mat2 rot = mat2(0.8, 0.6, -0.6, 0.8);
+    for (int i = 0; i < 6; i++) { v += a * noise(p); p = rot * p * 2.0; a *= 0.5; }
+    return v;
+  }
+
+  void main() {
+    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+    float aspect = u_resolution.x / u_resolution.y;
+    vec2 p = (uv - 0.5) * vec2(aspect, 1.0);
+    float t = u_time * 0.08;
+
+    // Domain warping — organic flow
+    float w1 = fbm(p * 2.5 + vec2(t * 0.7, t * 0.5));
+    float w2 = fbm(p * 2.5 + vec2(w1 * 0.8 + t * 0.3, w1 * 0.6 - t * 0.2));
+    float w3 = fbm(p * 3.0 + vec2(w2 * 0.6, w2 * 0.4 + t * 0.15));
+
+    float n1 = fbm(p * 1.8 + vec2(0.0, t * 0.4) + w2 * 0.5);
+    float n2 = fbm(p * 2.2 + vec2(t * 0.25, 0.0) + w3 * 0.4);
+    float m  = smoothstep(0.2, 0.8, 0.55 * n1 + 0.45 * n2);
+
+    // Pointer influence
+    vec2 ptr = u_pointer * vec2(aspect, 1.0) - vec2(aspect * 0.5, 0.5);
+    float pInf = smoothstep(0.5, 0.0, length(p - ptr)) * 0.06;
+
+    // Color palette — deep dark tones
+    vec3 cA = vec3(0.035, 0.04, 0.065);
+    vec3 cB = vec3(0.065, 0.08, 0.12);
+    vec3 cC = vec3(0.025, 0.03, 0.045);
+    vec3 cD = vec3(0.05, 0.055, 0.085);
+
+    vec3 col = mix(cA, cB, m);
+    col = mix(col, cD, w3 * 0.5);
+    col = mix(col, cC, 0.2 + 0.15 * sin(t * 2.5 + w2 * 3.0));
+    col += pInf;
+
+    // Subtle bright streaks
+    float streak = smoothstep(0.62, 0.68, w2) * smoothstep(0.72, 0.68, w2);
+    col += streak * vec3(0.03, 0.035, 0.055);
+
+    // Vignette
+    float r = length(uv - 0.5);
+    col *= mix(0.4, 1.0, smoothstep(0.85, 0.2, r));
+
+    // Film grain
+    col += (hash(uv * u_resolution.xy + fract(u_time * 13.7)) - 0.5) * 0.04;
+
+    // Scroll dimming
+    col *= 1.0 - u_scroll * 0.05;
+
+    outColor = vec4(clamp(col, 0.0, 1.0), 1.0);
+  }`;
+
+  // --- Shader sources (WebGL1 fallback — simplified) ---
+  const VS_SRC_V1 = `
+  attribute vec2 a_pos;
+  void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }`;
+
+  const FS_SRC_V1 = `
+  precision highp float;
+  uniform float u_time;
+  uniform vec2  u_resolution;
+  uniform vec2  u_pointer;
+  uniform float u_scroll;
+
+  float hash(vec2 p) {
+    p = fract(p * vec2(123.34, 456.21));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+  }
+  float noise(vec2 p) {
+    vec2 i = floor(p); vec2 f = fract(p);
+    float a = hash(i), b = hash(i + vec2(1.0,0.0));
+    float c = hash(i + vec2(0.0,1.0)), d = hash(i + vec2(1.0,1.0));
+    vec2 u = f * f * (3.0 - 2.0 * f);
+    return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+  }
+  float fbm(vec2 p) {
+    float v = 0.0, a = 0.5;
+    for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.0; a *= 0.5; }
+    return v;
+  }
+  void main() {
+    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+    float aspect = u_resolution.x / u_resolution.y;
+    vec2 p = (uv - 0.5) * vec2(aspect, 1.0);
+    float t = u_time * 0.08;
+    float m = smoothstep(0.2, 0.8,
+      0.55 * fbm(p * 2.0 + vec2(0.0, t * 0.4)) +
+      0.45 * fbm(p * 2.5 + vec2(t * 0.25, 0.0)));
+    vec3 col = mix(vec3(0.035,0.04,0.065), vec3(0.065,0.08,0.12), m);
+    col *= mix(0.4, 1.0, smoothstep(0.85, 0.2, length(uv - 0.5)));
+    col += (hash(uv * u_resolution.xy + fract(u_time * 13.7)) - 0.5) * 0.04;
+    gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
+  }`;
+
+  // --- Compile & link helpers ---
+  function compileShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      console.warn("Shader compile error:", gl.getShaderInfoLog(s));
+      gl.deleteShader(s);
+      return null;
+    }
+    return s;
+  }
+
+  function createProgram(vsSrc, fsSrc) {
+    const vs = compileShader(gl.VERTEX_SHADER, vsSrc);
+    const fs = compileShader(gl.FRAGMENT_SHADER, fsSrc);
+    if (!vs || !fs) return null;
+    const prog = gl.createProgram();
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      console.warn("Program link error:", gl.getProgramInfoLog(prog));
+      return null;
+    }
+    return prog;
+  }
+
+  // WebGL2 → WebGL1 fallback chain
+  let program = isWebGL2 ? createProgram(VS_SRC, FS_SRC) : null;
+  if (!program) {
+    program = createProgram(VS_SRC_V1, FS_SRC_V1);
+    if (!program) { canvas.style.background = "#0a0a0a"; return; }
+  }
+  gl.useProgram(program);
+
+  // --- Fullscreen triangle geometry ---
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  const aPos = gl.getAttribLocation(program, "a_pos");
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+  // --- Uniform locations ---
+  const uTime    = gl.getUniformLocation(program, "u_time");
+  const uRes     = gl.getUniformLocation(program, "u_resolution");
+  const uPointer = gl.getUniformLocation(program, "u_pointer");
+  const uScroll  = gl.getUniformLocation(program, "u_scroll");
+
+  // --- Input state ---
+  let pointerX = 0.5, pointerY = 0.5;
+  let scrollNorm = 0;
+  let running = true;
+  const t0 = performance.now();
+
+  document.addEventListener("mousemove", (e) => {
+    pointerX = e.clientX / window.innerWidth;
+    pointerY = 1.0 - e.clientY / window.innerHeight;
+  });
+
+  window.addEventListener("scroll", () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    scrollNorm = max > 0 ? window.scrollY / max : 0;
+  }, { passive: true });
+
+  // --- Resize (DPR capped at 1.5) ---
   function resize() {
-    W = window.innerWidth;
-    H = window.innerHeight;
-    canvas.width = W * dpr;
-    canvas.height = H * dpr;
-    canvas.style.width = W + "px";
-    canvas.style.height = H + "px";
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const dpr = Math.min(window.devicePixelRatio || 1, DPR_CAP);
+    const w = Math.floor(window.innerWidth * dpr);
+    const h = Math.floor(window.innerHeight * dpr);
+    canvas.width = w;
+    canvas.height = h;
+    gl.viewport(0, 0, w, h);
   }
   resize();
   window.addEventListener("resize", resize);
 
-  document.addEventListener("mousemove", (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
+  // --- Page Visibility API ---
+  document.addEventListener("visibilitychange", () => {
+    running = !document.hidden;
+    if (running) requestAnimationFrame(frame);
   });
 
-  // --- Droplet class ---
-  class Droplet {
-    constructor(isStatic) {
-      this.reset(isStatic);
-    }
-
-    reset(isStatic) {
-      this.x = Math.random() * W;
-      this.y = isStatic ? Math.random() * H : -Math.random() * H * 0.5;
-      this.radius = isStatic
-        ? Math.random() * 12 + 4
-        : Math.random() * 6 + 2;
-      this.isStatic = isStatic;
-      this.vy = isStatic ? 0 : Math.random() * 0.15 + 0.03;
-      this.vx = 0;
-      this.opacity = Math.random() * 0.3 + 0.15;
-      this.life = 1;
-      this.maxLife = isStatic
-        ? Math.random() * 800 + 600
-        : Math.random() * 1200 + 400;
-      this.age = 0;
-      this.wobblePhase = Math.random() * Math.PI * 2;
-      this.wobbleSpeed = Math.random() * 0.01 + 0.005;
-      this.wobbleAmp = Math.random() * 0.15 + 0.05;
-      this.trail = [];
-      this.trailTimer = 0;
-    }
-
-    update(drops) {
-      this.age++;
-      this.wobblePhase += this.wobbleSpeed;
-
-      const fadeIn = Math.min(this.age / 60, 1);
-      const fadeOut = Math.max(1 - (this.age - this.maxLife + 120) / 120, 0);
-      this.life = fadeIn * (this.age > this.maxLife - 120 ? fadeOut : 1);
-
-      if (this.age > this.maxLife) {
-        this.reset(this.isStatic);
-        return;
-      }
-
-      if (!this.isStatic) {
-        this.vy += 0.002 + this.radius * 0.0003;
-        this.vy = Math.min(this.vy, 1.5 + this.radius * 0.1);
-        this.vx += (Math.random() - 0.5) * 0.01;
-        this.vx *= 0.98;
-        this.x += this.vx + Math.sin(this.wobblePhase) * 0.2;
-        this.y += this.vy;
-
-        this.trailTimer++;
-        if (this.trailTimer > 3 && this.radius > 3) {
-          this.trail.push({
-            x: this.x,
-            y: this.y - this.radius * 0.5,
-            r: this.radius * (0.2 + Math.random() * 0.15),
-            opacity: this.opacity * 0.4 * this.life,
-            age: 0,
-          });
-          this.trailTimer = 0;
-        }
-
-        if (this.y > H + 20) this.reset(false);
-
-        for (const other of drops) {
-          if (other === this) continue;
-          const dx = this.x - other.x;
-          const dy = this.y - other.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < this.radius + other.radius) {
-            if (other.radius < this.radius) {
-              this.radius = Math.min(this.radius + other.radius * 0.3, 22);
-              this.vy += 0.05;
-              other.reset(other.isStatic);
-            }
-          }
-        }
-      } else {
-        this.x += Math.sin(this.wobblePhase) * 0.03;
-      }
-
-      const dx = this.x - mouseX;
-      const dy = this.y - mouseY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 150) {
-        const force = (150 - dist) / 150;
-        this.opacity = Math.min(this.opacity + force * 0.1, 0.6);
-        if (this.isStatic && force > 0.3) {
-          this.isStatic = false;
-          this.vy = 0.3;
-        }
-      }
-    }
-
-    draw() {
-      if (this.life <= 0) return;
-      const r = this.radius;
-      const x = this.x;
-      const y = this.y;
-      const alpha = this.opacity * this.life;
-
-      // Trail
-      for (let i = this.trail.length - 1; i >= 0; i--) {
-        const t = this.trail[i];
-        t.age++;
-        t.opacity *= 0.985;
-        if (t.opacity < 0.005 || t.age > 300) { this.trail.splice(i, 1); continue; }
-        ctx.beginPath();
-        ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(200, 220, 240, ${t.opacity})`;
-        ctx.fill();
-      }
-
-      ctx.save();
-      const stretch = this.isStatic ? 1 : Math.min(1 + this.vy * 0.08, 1.4);
-      const wobble = 1 + Math.sin(this.wobblePhase * 3) * this.wobbleAmp;
-      ctx.translate(x, y);
-      ctx.scale(wobble, stretch);
-
-      // Body gradient — glass refraction
-      const bodyGrad = ctx.createRadialGradient(-r * 0.25, -r * 0.25, r * 0.1, 0, 0, r);
-      bodyGrad.addColorStop(0, `rgba(240, 250, 255, ${alpha * 0.7})`);
-      bodyGrad.addColorStop(0.3, `rgba(200, 225, 245, ${alpha * 0.4})`);
-      bodyGrad.addColorStop(0.7, `rgba(160, 195, 230, ${alpha * 0.2})`);
-      bodyGrad.addColorStop(1, `rgba(140, 180, 220, ${alpha * 0.05})`);
-      ctx.beginPath();
-      ctx.arc(0, 0, r, 0, Math.PI * 2);
-      ctx.fillStyle = bodyGrad;
-      ctx.fill();
-
-      // Edge rim
-      ctx.beginPath();
-      ctx.arc(0, 0, r, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(180, 210, 240, ${alpha * 0.25})`;
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
-
-      // Primary specular highlight (top-left)
-      const hlR = r * 0.45;
-      const hlGrad = ctx.createRadialGradient(-r * 0.3, -r * 0.3, 0, -r * 0.3, -r * 0.3, hlR);
-      hlGrad.addColorStop(0, `rgba(255, 255, 255, ${alpha * 0.9})`);
-      hlGrad.addColorStop(0.4, `rgba(255, 255, 255, ${alpha * 0.3})`);
-      hlGrad.addColorStop(1, `rgba(255, 255, 255, 0)`);
-      ctx.beginPath();
-      ctx.arc(-r * 0.3, -r * 0.3, hlR, 0, Math.PI * 2);
-      ctx.fillStyle = hlGrad;
-      ctx.fill();
-
-      // Secondary highlight (bottom-right)
-      const hl2R = r * 0.2;
-      const hl2Grad = ctx.createRadialGradient(r * 0.25, r * 0.3, 0, r * 0.25, r * 0.3, hl2R);
-      hl2Grad.addColorStop(0, `rgba(255, 255, 255, ${alpha * 0.5})`);
-      hl2Grad.addColorStop(1, `rgba(255, 255, 255, 0)`);
-      ctx.beginPath();
-      ctx.arc(r * 0.25, r * 0.3, hl2R, 0, Math.PI * 2);
-      ctx.fillStyle = hl2Grad;
-      ctx.fill();
-
-      // Caustic shimmer
-      const caustR = r * 0.35;
-      const caustGrad = ctx.createRadialGradient(0, r * 0.15, 0, 0, r * 0.15, caustR);
-      const shimmer = Math.sin(this.wobblePhase * 2) * 0.15 + 0.15;
-      caustGrad.addColorStop(0, `rgba(220, 240, 255, ${alpha * shimmer})`);
-      caustGrad.addColorStop(1, `rgba(220, 240, 255, 0)`);
-      ctx.beginPath();
-      ctx.arc(0, r * 0.15, caustR, 0, Math.PI * 2);
-      ctx.fillStyle = caustGrad;
-      ctx.fill();
-
-      // Shadow / refraction lens
-      ctx.beginPath();
-      ctx.arc(0, r * 0.1, r * 0.85, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(0, 0, 0, ${alpha * 0.06})`;
-      ctx.fill();
-
-      ctx.restore();
-    }
+  // --- Render loop ---
+  function frame(now) {
+    if (!running) return;
+    const elapsed = (now - t0) / 1000.0;
+    gl.uniform1f(uTime, reducedMotion ? 0.0 : elapsed);
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform2f(uPointer, pointerX, pointerY);
+    gl.uniform1f(uScroll, scrollNorm);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    if (!reducedMotion) requestAnimationFrame(frame);
   }
 
-  // Condensation fog patches
-  const fogPatches = [];
-  for (let i = 0; i < 25; i++) {
-    fogPatches.push({
-      x: Math.random() * W, y: Math.random() * H,
-      rx: Math.random() * 120 + 40, ry: Math.random() * 80 + 30,
-      opacity: Math.random() * 0.04 + 0.01,
-      phase: Math.random() * Math.PI * 2,
-    });
-  }
-
-  function drawFog() {
-    for (const f of fogPatches) {
-      f.phase += 0.002;
-      const osc = Math.sin(f.phase) * 0.01;
-      const grad = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.rx);
-      grad.addColorStop(0, `rgba(200, 220, 240, ${f.opacity + osc})`);
-      grad.addColorStop(0.6, `rgba(180, 210, 235, ${(f.opacity + osc) * 0.3})`);
-      grad.addColorStop(1, `rgba(180, 210, 235, 0)`);
-      ctx.save();
-      ctx.scale(1, f.ry / f.rx);
-      ctx.beginPath();
-      ctx.arc(f.x, f.y * (f.rx / f.ry), f.rx, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-      ctx.restore();
-    }
-  }
-
-  // Create droplets
-  const drops = [];
-  for (let i = 0; i < 60; i++) drops.push(new Droplet(true));
-  for (let i = 0; i < 20; i++) drops.push(new Droplet(false));
-
-  let spawnTimer = 0;
-
-  function animate() {
-    ctx.clearRect(0, 0, W, H);
-    drawFog();
-
-    spawnTimer++;
-    if (spawnTimer > 120 + Math.random() * 180) {
-      spawnTimer = 0;
-      if (drops.filter((d) => !d.isStatic).length < 30) {
-        drops.push(new Droplet(false));
-      }
-    }
-
-    for (const d of drops) d.update(drops);
-    drops.sort((a, b) => a.radius - b.radius);
-    for (const d of drops) d.draw();
-
-    if (mouseX > 0 && mouseY > 0) {
-      const grad = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 100);
-      grad.addColorStop(0, "rgba(200, 225, 245, 0.03)");
-      grad.addColorStop(0.5, "rgba(190, 215, 240, 0.01)");
-      grad.addColorStop(1, "rgba(190, 215, 240, 0)");
-      ctx.fillStyle = grad;
-      ctx.fillRect(mouseX - 100, mouseY - 100, 200, 200);
-    }
-
-    requestAnimationFrame(animate);
-  }
-
-  animate();
+  requestAnimationFrame(frame);
 });
