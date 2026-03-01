@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>林悠偉 / Yui Hayashi</title>
+  <meta name="description" content="林悠偉のホームページ — 東京大学 大学院新領域創成科学研究科 複雑理工学専攻 博士課程">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ========== Navigation ========== -->
+  <nav class="nav">
+    <a href="index.html" class="nav__logo">Yui Hayashi</a>
+    <div class="nav__links">
+      <a href="index.html" class="active">Home</a>
+      <a href="publications.html">Publications</a>
+    </div>
+  </nav>
+
+  <!-- ========== Hero ========== -->
+  <section class="hero">
+    <img src="IMG_7958.JPG" alt="" class="hero__bg" loading="eager">
+    <div class="hero__overlay"></div>
+    <div class="hero__content">
+      <h1 class="hero__name">林 悠偉</h1>
+      <p class="hero__name-en">Yui Hayashi</p>
+      <p class="hero__tagline">
+        X線・中性子散乱のベイズ推論<br>
+        Bayesian inference for X-ray and neutron scattering
+      </p>
+    </div>
+    <div class="hero__scroll">
+      SCROLL
+      <span class="hero__scroll-line"></span>
+    </div>
+  </section>
+
+  <!-- ========== Biography ========== -->
+  <section class="section fade-in" id="biography">
+    <p class="section__label">BIOGRAPHY</p>
+    <h2 class="section__title">略歴</h2>
+    <p class="section__title-en">Biography</p>
+    <div class="section__divider"></div>
+
+    <div class="bio">
+      <img src="IMG_7958.JPG" alt="林悠偉" class="bio__image" loading="lazy">
+      <div class="bio__text">
+        <p>
+          東京大学 大学院新領域創成科学研究科 複雑理工学専攻 博士課程に在籍。
+          小角散乱データに対するベイズ推論の手法を研究し、試料モデルの選択とパラメータ推定に取り組んでいます。
+        </p>
+        <p>
+          Doctoral student at the Department of Complexity Science and Engineering,
+          Graduate School of Frontier Sciences, The University of Tokyo.
+          My research focuses on Bayesian inference for small-angle scattering data,
+          including model selection and parameter estimation.
+        </p>
+
+        <div class="bio__detail">
+          <div class="bio__detail-item">
+            <span class="bio__detail-label">所属</span>
+            <span class="bio__detail-value">東京大学 大学院新領域創成科学研究科<br>複雑理工学専攻 博士課程</span>
+          </div>
+          <div class="bio__detail-item">
+            <span class="bio__detail-label">Affiliation</span>
+            <span class="bio__detail-value">Graduate School of Frontier Sciences,<br>Dept. of Complexity Science and Engineering,<br>The University of Tokyo (Ph.D. student)</span>
+          </div>
+          <div class="bio__detail-item">
+            <span class="bio__detail-label">Keywords</span>
+            <span class="bio__detail-value">ベイズ推論 / Bayesian Inference<br>小角散乱 / Small-Angle Scattering<br>モデル選択 / Model Selection</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== Research ========== -->
+  <section class="section fade-in" id="research">
+    <p class="section__label">RESEARCH</p>
+    <h2 class="section__title">研究</h2>
+    <p class="section__title-en">Research Themes</p>
+    <div class="section__divider"></div>
+
+    <div class="research__grid">
+      <div class="research__card">
+        <p class="research__card-number">01</p>
+        <h3 class="research__card-title">小角散乱データのベイズ推論</h3>
+        <p class="research__card-title-en">Bayesian Inference for Small-Angle Scattering</p>
+        <p class="research__card-desc">
+          X線および中性子の小角散乱（SAS）実験データに対してベイズ推論を適用し、
+          試料の構造モデルの選択と物理パラメータの推定を行います。
+          ベイズ的アプローチにより、モデルの不確実性を定量的に評価できます。
+        </p>
+      </div>
+      <div class="research__card">
+        <p class="research__card-number">02</p>
+        <h3 class="research__card-title">試料モデル選択</h3>
+        <p class="research__card-title-en">Model Selection for Sample Structures</p>
+        <p class="research__card-desc">
+          小角散乱法において複数の試料構造モデル候補からデータに最も適合するモデルを
+          ベイズ的に選択する手法を開発しています。周辺尤度の計算を通じて、
+          過適合を避けた適切なモデル選択を実現します。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== Awards ========== -->
+  <section class="section fade-in" id="awards">
+    <p class="section__label">RECOGNITION</p>
+    <h2 class="section__title">受賞</h2>
+    <p class="section__title-en">Awards &amp; Recognition</p>
+    <div class="section__divider"></div>
+
+    <div class="awards__list">
+      <div class="award__item">
+        <span class="award__year">2024</span>
+        <div class="award__content">
+          <span class="award__title">Bronze Poster Award</span>
+          <span class="award__detail">XIX International Small-Angle Scattering Conference (SAS2024), Taipei, Taiwan<br>"Bayesian Inference of Models and Parameters in Small-Angle Scattering"</span>
+        </div>
+      </div>
+      <div class="award__item">
+        <span class="award__year">2024</span>
+        <div class="award__content">
+          <span class="award__title">最優秀賞 — UMP-JUST 生成AIハッカソンコンテスト</span>
+          <span class="award__detail">東京大学 情報理工学系研究科 産学連携プラットフォーム<br>チーム: a.s.ist-lab（塩谷佳介, 林悠偉, 清水将海, 森口椋太, 上林生季, 村上和聴）</span>
+        </div>
+      </div>
+      <div class="award__item">
+        <span class="award__year">2023</span>
+        <div class="award__content">
+          <span class="award__title">最優秀賞 — 第6回データサイエンスコンテスト</span>
+          <span class="award__detail">東京大学数理情報科学教育研究センター<br>チーム: 株式会社a.s.ist（塩谷佳介, 竝河伴裕, 林悠偉）（名前は五十音順）</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== Contact ========== -->
+  <section class="section contact fade-in" id="contact">
+    <p class="section__label">CONTACT</p>
+    <h2 class="section__title">連絡先</h2>
+    <p class="section__title-en">Contact</p>
+    <div class="section__divider"></div>
+
+    <div class="contact__grid">
+      <div class="contact__item">
+        <p class="contact__label">NAME</p>
+        <p class="contact__value">林 悠偉 / Yui Hayashi</p>
+      </div>
+      <div class="contact__item">
+        <p class="contact__label">AFFILIATION</p>
+        <p class="contact__value">
+          東京大学 大学院新領域創成科学研究科<br>
+          複雑理工学専攻 博士課程
+        </p>
+      </div>
+      <div class="contact__item">
+        <p class="contact__label">Google Scholar</p>
+        <p class="contact__value">
+          <a href="https://scholar.google.com/citations?user=Pet-HJoAAAAJ&hl=en" target="_blank" rel="noopener">
+            scholar.google.com
+          </a>
+        </p>
+      </div>
+      <div class="contact__item">
+        <p class="contact__label">GitHub</p>
+        <p class="contact__value">
+          <a href="https://github.com/yuihayashi" target="_blank" rel="noopener">
+            github.com/yuihayashi
+          </a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== Footer ========== -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <p class="footer__copy">&copy; 2025 Yui Hayashi. All rights reserved.</p>
+      <p class="footer__affiliation">東京大学 大学院新領域創成科学研究科<br>複雑理工学専攻</p>
+    </div>
+  </footer>
+
+  <script src="scripts.js"></script>
+</body>
+</html>
