@@ -49,7 +49,7 @@ img {
   color: #fff;
 }
 
-/* ---------- Water Ripple Canvas ---------- */
+/* ---------- Water Droplet Canvas ---------- */
 #rippleCanvas {
   position: fixed;
   top: 0;
@@ -58,7 +58,7 @@ img {
   height: 100%;
   z-index: 9999;
   pointer-events: none;
-  mix-blend-mode: screen;
+  mix-blend-mode: overlay;
 }
 
 /* ---------- Navigation ---------- */
