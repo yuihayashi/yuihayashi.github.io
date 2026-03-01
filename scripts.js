@@ -121,6 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
     vec3 midTone   = vec3(0.08, 0.30, 0.42);
     vec3 freshCyan = vec3(0.10, 0.70, 0.85);
     vec3 aquaLight = vec3(0.35, 0.88, 0.95);
+    vec3 white     = vec3(1.0, 1.0, 1.0);
 
     vec3 color = mix(darkBase, midTone, smoothstep(0.1, 0.5, f));
     float cyanMask = smoothstep(0.40, 0.70, f);
@@ -128,12 +129,22 @@ document.addEventListener("DOMContentLoaded", () => {
     color += vec3(0.03, 0.10, 0.14) * smoothstep(0.3, 0.7, length(q));
     color += vec3(0.02, 0.15, 0.22) * smoothstep(0.4, 0.9, length(r));
 
-    // Specular / glossy highlights
-    float specular = pow(smoothstep(0.65, 0.92, f), 3.0);
-    color = mix(color, aquaLight, specular * 0.7);
-    // Subtle sheen based on domain warp intensity
-    float sheen = pow(max(0.0, dot(normalize(r), vec2(0.707, 0.707))), 4.0);
-    color += vec3(0.15, 0.25, 0.30) * sheen * 0.4;
+    // Water surface slimy / caustic reflection
+    vec2 caustSt = st * 2.5 + r * 0.8;
+    float caust1 = fbm(caustSt + vec2(0.3 * u_time, -0.2 * u_time));
+    float caust2 = fbm(caustSt * 1.3 + vec2(-0.2 * u_time, 0.35 * u_time));
+    float caustic = pow(smoothstep(0.35, 0.75, caust1 * caust2 * 2.5), 2.0);
+    color += aquaLight * caustic * 0.45;
+
+    // Specular / glossy highlights – sharp water reflection
+    float specular = pow(smoothstep(0.60, 0.88, f), 4.0);
+    color = mix(color, white, specular * 0.35);
+    // Wet sheen based on domain warp intensity
+    float sheen = pow(max(0.0, dot(normalize(r), vec2(0.707, 0.707))), 5.0);
+    color += vec3(0.25, 0.40, 0.45) * sheen * 0.5;
+    // Edge highlight – slimy rim light
+    float rim = pow(1.0 - smoothstep(0.0, 0.6, f), 3.0);
+    color += vec3(0.05, 0.18, 0.25) * rim * 0.6;
 
     outColor = vec4(color, 1.0);
   }`;
