@@ -68,6 +68,7 @@ img {
   height: 100vh;
   z-index: -1;
   pointer-events: none;
+  opacity: 0.82;
 }
 
 /* ---------- Navigation ---------- */
