@@ -117,19 +117,19 @@ document.addEventListener("DOMContentLoaded", () => {
     float f = fbm(st + r);
 
     // Fresh cyan + aqua palette with glossy highlights
-    vec3 darkBase  = vec3(0.01, 0.02, 0.05);
-    vec3 deepTone  = vec3(0.03, 0.12, 0.22);
-    vec3 midTone   = vec3(0.08, 0.30, 0.42);
+    vec3 darkBase  = vec3(0.01, 0.02, 0.08);
+    vec3 deepTone  = vec3(0.03, 0.10, 0.28);
+    vec3 midTone   = vec3(0.06, 0.22, 0.42);
     vec3 freshCyan = vec3(0.10, 0.70, 0.85);
     vec3 aquaLight = vec3(0.35, 0.88, 0.95);
     vec3 white     = vec3(1.0, 1.0, 1.0);
 
-    vec3 color = mix(darkBase, deepTone, smoothstep(0.05, 0.30, f));
-    color = mix(color, midTone, smoothstep(0.25, 0.55, f));
-    float cyanMask = smoothstep(0.45, 0.75, f);
-    color = mix(color, freshCyan, cyanMask * 0.55);
-    color += vec3(0.02, 0.08, 0.12) * smoothstep(0.2, 0.6, length(q));
-    color += vec3(0.01, 0.10, 0.18) * smoothstep(0.3, 0.8, length(r));
+    vec3 color = mix(darkBase, deepTone, smoothstep(0.0, 0.35, f));
+    color = mix(color, midTone, smoothstep(0.30, 0.60, f));
+    float cyanMask = smoothstep(0.50, 0.80, f);
+    color = mix(color, freshCyan, cyanMask * 0.45);
+    color += vec3(0.01, 0.06, 0.14) * smoothstep(0.15, 0.55, length(q));
+    color += vec3(0.01, 0.08, 0.20) * smoothstep(0.25, 0.75, length(r));
 
     // ── Water surface slimy / caustic reflection (multi-layer) ──
     vec2 caustSt = st * 2.5 + r * 0.8;
