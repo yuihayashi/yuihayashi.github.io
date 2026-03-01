@@ -100,28 +100,32 @@ document.addEventListener("DOMContentLoaded", () => {
     st *= 3.0;
 
     vec2 q = vec2(0.0);
-    q.x = fbm(st + 0.03 * u_time);
-    q.y = fbm(st + vec2(1.0));
+    q.x = fbm(st + 0.06 * u_time);
+    q.y = fbm(st + vec2(1.0) + 0.04 * u_time);
 
     vec2 r = vec2(0.0);
-    r.x = fbm(st + 1.0 * q + vec2(1.7, 9.2) + 0.15 * u_time);
-    r.y = fbm(st + 1.0 * q + vec2(8.3, 2.8) + 0.12 * u_time);
+    r.x = fbm(st + 1.5 * q + vec2(1.7, 9.2) + 0.25 * u_time);
+    r.y = fbm(st + 1.5 * q + vec2(8.3, 2.8) + 0.20 * u_time);
 
     vec2 mouse = u_mouse / u_resolution.xy;
     mouse.x *= u_resolution.x / u_resolution.y;
     mouse.y = 1.0 - (u_mouse.y / u_resolution.y);
 
     float dist = distance(st, mouse);
-    r += exp(-dist * 3.0) * 0.8;
+    r += exp(-dist * 2.5) * 1.2;
 
     float f = fbm(st + r);
 
-    vec3 baseColor = vec3(0.01, 0.02, 0.05);
-    vec3 fluidColor = vec3(0.15, 0.65, 0.8);
+    // Monochrome + cyan palette
+    vec3 darkBase = vec3(0.02, 0.02, 0.03);
+    vec3 monoGrey = vec3(0.25, 0.27, 0.30);
+    vec3 cyan     = vec3(0.05, 0.55, 0.75);
 
-    vec3 color = mix(baseColor, fluidColor, smoothstep(0.1, 0.8, f));
-    color += vec3(0.0, 0.15, 0.3) * smoothstep(0.3, 0.7, length(q));
-    color += vec3(0.05, 0.2, 0.35) * smoothstep(0.4, 0.9, length(r));
+    vec3 color = mix(darkBase, monoGrey, smoothstep(0.15, 0.6, f));
+    float cyanMask = smoothstep(0.45, 0.75, f);
+    color = mix(color, cyan, cyanMask * 0.6);
+    color += vec3(0.08, 0.08, 0.10) * smoothstep(0.3, 0.7, length(q));
+    color += vec3(0.02, 0.12, 0.20) * smoothstep(0.4, 0.9, length(r));
 
     outColor = vec4(color, 1.0);
   }`;
