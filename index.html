@@ -12,12 +12,18 @@
 </head>
 <body>
 
+  <!-- ========== Water Ripple Canvas ========== -->
+  <canvas id="rippleCanvas"></canvas>
+
   <!-- ========== Navigation ========== -->
   <nav class="nav">
     <a href="index.html" class="nav__logo">Yui Hayashi</a>
     <div class="nav__links">
-      <a href="index.html" class="active">Home</a>
-      <a href="publications.html">Publications</a>
+      <a href="#biography">Biography</a>
+      <a href="#research">Research</a>
+      <a href="#publications">Publications</a>
+      <a href="#awards">Awards</a>
+      <a href="#contact">Contact</a>
     </div>
   </nav>
 
@@ -109,6 +115,76 @@
     </div>
   </section>
 
+  <!-- ========== Publications (All combined) ========== -->
+  <section class="section section--wide fade-in" id="publications">
+    <p class="section__label">PUBLICATIONS</p>
+    <h2 class="section__title">業績</h2>
+    <p class="section__title-en">Publications &amp; Presentations</p>
+    <div class="section__divider"></div>
+
+    <!-- Invited Talks -->
+    <div class="pub-section__header">
+      <h3 class="pub-section__title">招待講演</h3>
+      <span class="pub-section__count">Invited Talks (2)</span>
+    </div>
+    <div class="pub-list">
+      <div class="pub-item">
+        <p class="pub-item__title">ベイズ計測による小角散乱法の試料モデル選択とパラメータの推定</p>
+        <p class="pub-item__authors"><strong>林悠偉</strong></p>
+        <p class="pub-item__venue">
+          九州シンクロトロン光研究センターシンポジウム「ベイズ計測〜現状と展望〜」,
+          佐賀県立九州シンクロトロン光研究センター セミナー室A, 2024年10月.
+        </p>
+      </div>
+      <div class="pub-item">
+        <p class="pub-item__title">小角散乱データに基づく試料パラメータとモデルのベイズ推論</p>
+        <p class="pub-item__authors"><strong>林悠偉</strong></p>
+        <p class="pub-item__venue">
+          東京大学物性研究所 中性子セミナー, 機能物性セミナー,
+          東京大学物性研究所６階大講義室及びWebハイブリッドウェブイベント, 2024年4月.
+          <a href="https://www.issp.u-tokyo.ac.jp/maincontents/seminar/all2.html?ptype=seminar&pid=21987" target="_blank" rel="noopener">Link</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Conference Presentations -->
+    <div class="pub-section__header" style="margin-top: 3rem;">
+      <h3 class="pub-section__title">学会発表</h3>
+      <span class="pub-section__count">Conference Presentations (4)</span>
+    </div>
+    <div class="pub-list">
+      <div class="pub-item">
+        <p class="pub-item__title">Bayesian Inference of Models and Parameters in Small-Angle Scattering</p>
+        <p class="pub-item__authors"><strong>Yui Hayashi</strong>, Shun Katakami, Shigeo Kuwamoto, Kenji Nagata, Masaichiro Mizumaki and Masato Okada</p>
+        <p class="pub-item__venue">
+          Poster Presentation at the XIX International Small-Angle Scattering Conference (SAS2024),
+          Taipei, Taiwan, November 3–8, 2024.
+        </p>
+      </div>
+      <div class="pub-item">
+        <p class="pub-item__title">ベイズ的アプローチによる小角散乱実験における試料構造の選択</p>
+        <p class="pub-item__authors"><strong>林悠偉</strong>, 片上舜, 桑本滋生, 永田賢二, 水牧仁一朗, 岡田真人</p>
+        <p class="pub-item__venue">
+          日本物理学会第78回年次大会, 東北大学, 2023年9月.
+        </p>
+      </div>
+      <div class="pub-item">
+        <p class="pub-item__title">小角散乱データのベイズ推論</p>
+        <p class="pub-item__authors"><strong>林悠偉</strong>, 片上舜, 桑本滋生, 永田賢二, 水牧仁一朗, 岡田真人</p>
+        <p class="pub-item__venue">
+          日本物理学会2023年春季大会, 24aL3-12, オンラインイベント, 2023年3月.
+        </p>
+      </div>
+      <div class="pub-item">
+        <p class="pub-item__title">小角散乱データのベイズ推論</p>
+        <p class="pub-item__authors"><strong>林悠偉</strong>, 片上舜, 桑本滋生, 永田賢二, 水牧仁一朗, 岡田真人</p>
+        <p class="pub-item__venue">
+          第25回情報論的学習理論ワークショップ (IBIS2022), つくば国際会議場 2-010, 2022年11月.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- ========== Awards ========== -->
   <section class="section fade-in" id="awards">
     <p class="section__label">RECOGNITION</p>
@@ -121,21 +197,31 @@
         <span class="award__year">2024</span>
         <div class="award__content">
           <span class="award__title">Bronze Poster Award</span>
-          <span class="award__detail">XIX International Small-Angle Scattering Conference (SAS2024), Taipei, Taiwan<br>"Bayesian Inference of Models and Parameters in Small-Angle Scattering"</span>
+          <span class="award__detail">
+            <strong>Yui Hayashi</strong>. XIX International Small-Angle Scattering Conference (SAS2024), Taipei, Taiwan, November 3–8, 2024.
+            Presentation title: "Bayesian Inference of Models and Parameters in Small-Angle Scattering."
+          </span>
         </div>
       </div>
       <div class="award__item">
         <span class="award__year">2024</span>
         <div class="award__content">
           <span class="award__title">最優秀賞 — UMP-JUST 生成AIハッカソンコンテスト</span>
-          <span class="award__detail">東京大学 情報理工学系研究科 産学連携プラットフォーム<br>チーム: a.s.ist-lab（塩谷佳介, 林悠偉, 清水将海, 森口椋太, 上林生季, 村上和聴）</span>
+          <span class="award__detail">
+            塩谷佳介, <strong>林悠偉</strong>, 清水将海, 森口椋太, 上林生季, 村上和聴,
+            東京大学 情報理工学系研究科 産学連携プラットフォーム UMP-JUST 生成AIハッカソンコンテスト, チーム: a.s.ist-lab, 2024年9月.
+          </span>
         </div>
       </div>
       <div class="award__item">
         <span class="award__year">2023</span>
         <div class="award__content">
           <span class="award__title">最優秀賞 — 第6回データサイエンスコンテスト</span>
-          <span class="award__detail">東京大学数理情報科学教育研究センター<br>チーム: 株式会社a.s.ist（塩谷佳介, 竝河伴裕, 林悠偉）（名前は五十音順）</span>
+          <span class="award__detail">
+            塩谷佳介, 竝河伴裕, <strong>林悠偉</strong>,
+            東京大学数理情報科学教育研究センター 第6回データサイエンスコンテスト, 株式会社a.s.ist, 2023年9月.
+            <a href="http://www.mi.u-tokyo.ac.jp/contest2023.html" target="_blank" rel="noopener">Link</a>（名前は五十音順）
+          </span>
         </div>
       </div>
     </div>
