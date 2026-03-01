@@ -100,32 +100,40 @@ document.addEventListener("DOMContentLoaded", () => {
     st *= 3.0;
 
     vec2 q = vec2(0.0);
-    q.x = fbm(st + 0.06 * u_time);
-    q.y = fbm(st + vec2(1.0) + 0.04 * u_time);
+    q.x = fbm(st + 0.10 * u_time);
+    q.y = fbm(st + vec2(1.0) + 0.07 * u_time);
 
     vec2 r = vec2(0.0);
-    r.x = fbm(st + 1.5 * q + vec2(1.7, 9.2) + 0.25 * u_time);
-    r.y = fbm(st + 1.5 * q + vec2(8.3, 2.8) + 0.20 * u_time);
+    r.x = fbm(st + 2.0 * q + vec2(1.7, 9.2) + 0.40 * u_time);
+    r.y = fbm(st + 2.0 * q + vec2(8.3, 2.8) + 0.32 * u_time);
 
     vec2 mouse = u_mouse / u_resolution.xy;
     mouse.x *= u_resolution.x / u_resolution.y;
     mouse.y = 1.0 - (u_mouse.y / u_resolution.y);
 
     float dist = distance(st, mouse);
-    r += exp(-dist * 2.5) * 1.2;
+    r += exp(-dist * 2.0) * 1.5;
 
     float f = fbm(st + r);
 
-    // Monochrome + cyan palette
-    vec3 darkBase = vec3(0.02, 0.02, 0.03);
-    vec3 monoGrey = vec3(0.25, 0.27, 0.30);
-    vec3 cyan     = vec3(0.05, 0.55, 0.75);
+    // Fresh cyan + aqua palette with glossy highlights
+    vec3 darkBase  = vec3(0.01, 0.03, 0.06);
+    vec3 midTone   = vec3(0.08, 0.30, 0.42);
+    vec3 freshCyan = vec3(0.10, 0.70, 0.85);
+    vec3 aquaLight = vec3(0.35, 0.88, 0.95);
 
-    vec3 color = mix(darkBase, monoGrey, smoothstep(0.15, 0.6, f));
-    float cyanMask = smoothstep(0.45, 0.75, f);
-    color = mix(color, cyan, cyanMask * 0.6);
-    color += vec3(0.08, 0.08, 0.10) * smoothstep(0.3, 0.7, length(q));
-    color += vec3(0.02, 0.12, 0.20) * smoothstep(0.4, 0.9, length(r));
+    vec3 color = mix(darkBase, midTone, smoothstep(0.1, 0.5, f));
+    float cyanMask = smoothstep(0.40, 0.70, f);
+    color = mix(color, freshCyan, cyanMask * 0.65);
+    color += vec3(0.03, 0.10, 0.14) * smoothstep(0.3, 0.7, length(q));
+    color += vec3(0.02, 0.15, 0.22) * smoothstep(0.4, 0.9, length(r));
+
+    // Specular / glossy highlights
+    float specular = pow(smoothstep(0.65, 0.92, f), 3.0);
+    color = mix(color, aquaLight, specular * 0.7);
+    // Subtle sheen based on domain warp intensity
+    float sheen = pow(max(0.0, dot(normalize(r), vec2(0.707, 0.707))), 4.0);
+    color += vec3(0.15, 0.25, 0.30) * sheen * 0.4;
 
     outColor = vec4(color, 1.0);
   }`;
