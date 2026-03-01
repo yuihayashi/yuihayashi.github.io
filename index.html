@@ -1,14 +1,68 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" prefix="og: https://ogp.me/ns#">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>林悠偉 / Yui Hayashi</title>
-  <meta name="description" content="林悠偉のホームページ — 東京大学 大学院新領域創成科学研究科 複雑理工学専攻 博士課程">
+  <title>林悠偉 / Yui Hayashi — 東京大学 博士課程 | ベイズ推論・小角散乱</title>
+  <meta name="description" content="林悠偉（Yui Hayashi）のホームページ。東京大学 大学院新領域創成科学研究科 複雑理工学専攻 博士課程。X線・中性子小角散乱データに対するベイズ推論・モデル選択の研究。">
+  <meta name="keywords" content="林悠偉, Yui Hayashi, 東京大学, ベイズ推論, 小角散乱, Bayesian Inference, Small-Angle Scattering, 複雑理工学, 研究者">
+  <meta name="author" content="林悠偉 / Yui Hayashi">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://yuihayashi.github.io/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yuihayashi.github.io/">
+  <meta property="og:title" content="林悠偉 / Yui Hayashi — 東京大学 博士課程">
+  <meta property="og:description" content="東京大学 大学院新領域創成科学研究科 複雑理工学専攻 博士課程。X線・中性子小角散乱データに対するベイズ推論・モデル選択の研究。">
+  <meta property="og:image" content="https://yuihayashi.github.io/icon.jpeg">
+  <meta property="og:site_name" content="Yui Hayashi">
+  <meta property="og:locale" content="ja_JP">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="林悠偉 / Yui Hayashi — 東京大学 博士課程">
+  <meta name="twitter:description" content="東京大学 複雑理工学専攻 博士課程。ベイズ推論・小角散乱の研究。">
+  <meta name="twitter:image" content="https://yuihayashi.github.io/icon.jpeg">
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "林悠偉",
+    "alternateName": "Yui Hayashi",
+    "url": "https://yuihayashi.github.io/",
+    "image": "https://yuihayashi.github.io/icon.jpeg",
+    "jobTitle": "博士課程学生",
+    "affiliation": {
+      "@type": "Organization",
+      "name": "東京大学 大学院新領域創成科学研究科 複雑理工学専攻",
+      "url": "https://www.k.u-tokyo.ac.jp/"
+    },
+    "alumniOf": [
+      {
+        "@type": "Organization",
+        "name": "東京理科大学 理工学部 物理学科"
+      },
+      {
+        "@type": "Organization",
+        "name": "東京大学 大学院新領域創成科学研究科"
+      }
+    ],
+    "knowsAbout": ["Bayesian Inference", "Small-Angle Scattering", "Model Selection", "X-ray Scattering", "Neutron Scattering"],
+    "sameAs": [
+      "https://scholar.google.com/citations?user=Pet-HJoAAAAJ&hl=en",
+      "https://github.com/yuihayashi"
+    ]
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@400;600;700&family=Noto+Sans+JP:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+JP:wght@400;600;700;900&family=Noto+Sans+JP:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/jpeg" href="icon.jpeg">
 </head>
 <body>
 
@@ -19,7 +73,8 @@
   <canvas id="bg-canvas" aria-hidden="true"></canvas>
 
   <!-- ========== Navigation ========== -->
-  <nav class="nav">
+  <header>
+  <nav class="nav" role="navigation" aria-label="メインナビゲーション">
     <a href="index.html" class="nav__logo">Yui Hayashi</a>
     <div class="nav__links">
       <a href="#biography">Biography</a>
@@ -29,6 +84,9 @@
       <a href="#contact">Contact</a>
     </div>
   </nav>
+  </header>
+
+  <main>
 
   <!-- ========== Hero ========== -->
   <section class="hero">
@@ -335,6 +393,8 @@
     </div>
   </section>
 
+  </main>
+
   <!-- ========== Footer ========== -->
   <footer class="footer">
     <div class="footer__inner">
@@ -343,6 +403,6 @@
     </div>
   </footer>
 
-  <script src="scripts.js"></script>
+  <script src="scripts.js" defer></script>
 </body>
 </html>
