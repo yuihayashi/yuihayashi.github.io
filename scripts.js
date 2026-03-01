@@ -116,12 +116,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     float f = fbm(st + r);
 
-    vec3 baseColor = vec3(0.02, 0.02, 0.03);
-    vec3 fluidColor = vec3(0.5, 0.55, 0.6);
+    vec3 baseColor = vec3(0.01, 0.02, 0.06);
+    vec3 fluidColor = vec3(0.0, 0.85, 0.95);
 
     vec3 color = mix(baseColor, fluidColor, smoothstep(0.1, 0.8, f));
-    color += vec3(0.15) * smoothstep(0.3, 0.7, length(q));
-    color += vec3(0.2) * smoothstep(0.4, 0.9, length(r));
+    color += vec3(0.0, 0.3, 0.5) * smoothstep(0.3, 0.7, length(q));
+    color += vec3(0.1, 0.4, 0.6) * smoothstep(0.4, 0.9, length(r));
 
     outColor = vec4(color, 1.0);
   }`;

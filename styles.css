@@ -49,17 +49,6 @@ img {
   color: #fff;
 }
 
-/* ---------- Background Image Layer ---------- */
-.bg-image {
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
-  pointer-events: none;
-}
-
 /* ---------- Background Shader Canvas ---------- */
 #bg-canvas {
   position: fixed;
@@ -68,7 +57,6 @@ img {
   height: 100vh;
   z-index: -1;
   pointer-events: none;
-  opacity: 0.82;
 }
 
 /* ---------- Navigation ---------- */
