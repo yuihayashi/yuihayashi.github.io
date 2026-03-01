@@ -16,7 +16,7 @@ html {
 }
 
 body {
-  background: #0a0a0a;
+  background: #050505;
   color: #e8e8e8;
   font-family: "Helvetica Neue", "Noto Sans JP", Arial, sans-serif;
   line-height: 1.8;
@@ -47,6 +47,17 @@ img {
 ::selection {
   background: rgba(255, 255, 255, 0.15);
   color: #fff;
+}
+
+/* ---------- Background Image Layer ---------- */
+.bg-image {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  pointer-events: none;
 }
 
 /* ---------- Background Shader Canvas ---------- */
