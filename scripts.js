@@ -129,22 +129,37 @@ document.addEventListener("DOMContentLoaded", () => {
     color += vec3(0.03, 0.10, 0.14) * smoothstep(0.3, 0.7, length(q));
     color += vec3(0.02, 0.15, 0.22) * smoothstep(0.4, 0.9, length(r));
 
-    // Water surface slimy / caustic reflection
+    // ── Water surface slimy / caustic reflection (multi-layer) ──
     vec2 caustSt = st * 2.5 + r * 0.8;
     float caust1 = fbm(caustSt + vec2(0.3 * u_time, -0.2 * u_time));
-    float caust2 = fbm(caustSt * 1.3 + vec2(-0.2 * u_time, 0.35 * u_time));
-    float caustic = pow(smoothstep(0.35, 0.75, caust1 * caust2 * 2.5), 2.0);
-    color += aquaLight * caustic * 0.45;
+    float caust2 = fbm(caustSt * 1.4 + vec2(-0.25 * u_time, 0.35 * u_time));
+    float caust3 = fbm(caustSt * 0.7 + vec2(0.15 * u_time, 0.18 * u_time));
+    float caustic = pow(smoothstep(0.30, 0.70, caust1 * caust2 * 2.8), 2.0);
+    float caustic2 = pow(smoothstep(0.35, 0.72, caust2 * caust3 * 2.5), 2.5);
+    color += aquaLight * caustic * 0.55;
+    color += white * caustic2 * 0.20;
 
-    // Specular / glossy highlights – sharp water reflection
-    float specular = pow(smoothstep(0.60, 0.88, f), 4.0);
-    color = mix(color, white, specular * 0.35);
+    // ── Sliding shimmer streaks (water surface glint) ──
+    vec2 shimmerSt = st * 4.0 + vec2(0.5 * u_time, -0.3 * u_time);
+    float shimmer1 = noise(shimmerSt * vec2(3.0, 0.5));
+    float shimmer2 = noise(shimmerSt * vec2(0.4, 2.5) + vec2(5.0));
+    float shimmer = pow(shimmer1 * shimmer2, 3.0) * 8.0;
+    shimmer *= smoothstep(0.3, 0.6, f);
+    color += white * shimmer * 0.30;
+
+    // ── Specular / glossy highlights – sharp water reflection ──
+    float specular = pow(smoothstep(0.55, 0.85, f), 5.0);
+    color = mix(color, white, specular * 0.45);
     // Wet sheen based on domain warp intensity
-    float sheen = pow(max(0.0, dot(normalize(r), vec2(0.707, 0.707))), 5.0);
-    color += vec3(0.25, 0.40, 0.45) * sheen * 0.5;
-    // Edge highlight – slimy rim light
-    float rim = pow(1.0 - smoothstep(0.0, 0.6, f), 3.0);
-    color += vec3(0.05, 0.18, 0.25) * rim * 0.6;
+    float sheen = pow(max(0.0, dot(normalize(r), vec2(0.707, 0.707))), 6.0);
+    color += vec3(0.30, 0.50, 0.55) * sheen * 0.6;
+    // Slimy rim light – slippery edge glow
+    float rim = pow(1.0 - smoothstep(0.0, 0.55, f), 3.5);
+    color += vec3(0.06, 0.22, 0.30) * rim * 0.7;
+    // Fresnel-like edge highlight for slippery look
+    float grad = length(r - q);
+    float fresnel = pow(smoothstep(0.2, 1.2, grad), 2.0);
+    color += aquaLight * fresnel * 0.25;
 
     outColor = vec4(color, 1.0);
   }`;
