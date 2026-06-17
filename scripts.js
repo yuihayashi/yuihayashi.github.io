@@ -240,15 +240,9 @@ document.addEventListener("DOMContentLoaded", () => {
   resizeCanvas();
 
   const startTime = performance.now();
-  let running = true;
-
-  document.addEventListener("visibilitychange", () => {
-    running = !document.hidden;
-    if (running) requestAnimationFrame(render);
-  });
+  let rafId = null;
 
   function render(currentTime) {
-    if (!running) return;
     const elapsedTime = (currentTime - startTime) * 0.001;
 
     gl.useProgram(program);
@@ -260,7 +254,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     gl.bindVertexArray(vao);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
-    requestAnimationFrame(render);
+    rafId = requestAnimationFrame(render);
   }
-  requestAnimationFrame(render);
+
+  // Pause rendering while the tab is hidden; the rafId guard prevents the
+  // loop from being started more than once on repeated visibility changes.
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    } else if (rafId === null) {
+      rafId = requestAnimationFrame(render);
+    }
+  });
+
+  rafId = requestAnimationFrame(render);
 });
