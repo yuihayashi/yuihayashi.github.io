@@ -187,6 +187,23 @@ body.no-webgl #bg-canvas {
   width: 100%;
 }
 
+/* Language toggle (JA <-> EN) */
+.nav__links a.nav__lang {
+  padding: 0.14rem 0.55rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  color: var(--accent-dim);
+}
+
+.nav__links a.nav__lang::after {
+  display: none;
+}
+
+.nav__links a.nav__lang:hover {
+  color: var(--accent);
+  border-color: var(--accent-dim);
+}
+
 /* ---------- Hero Section ---------- */
 .hero {
   position: relative;

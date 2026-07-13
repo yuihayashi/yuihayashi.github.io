@@ -2,4 +2,22 @@
 個人の情報.md
 UI仕様書.md
 ref.html
+
+# 秘密情報
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*credentials*.json
+*service_account*.json
+*secret*.json
+*_api_key*
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+__pycache__/
